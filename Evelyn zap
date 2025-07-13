@@ -1,0 +1,33 @@
+const express = require('express');
+const axios = require('axios');
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+const ZAPI_INSTANCE = process.env.ZAPI_INSTANCE;
+const ZAPI_TOKEN = process.env.ZAPI_TOKEN;
+const PHONE_NUMBER = process.env.PHONE_NUMBER || '37998154607';
+
+app.use(express.json());
+
+const mensagemBoasVindas = `Oi, meu amor! 💖 Eu sou a Evelyn e tô aqui no seu zap! Qualquer coisa, me chama que vou te ajudar com carinho.`;
+
+async function enviarMensagem(numero, mensagem) {
+  try {
+    const response = await axios.post(`https://api.z-api.io/instances/${ZAPI_INSTANCE}/token/${ZAPI_TOKEN}/send-messages`, {
+      phone: numero,
+      message: mensagem
+    });
+    console.log('Mensagem enviada:', response.data);
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error.response?.data || error.message);
+  }
+}
+
+app.get('/enviar', async (req, res) => {
+  await enviarMensagem(PHONE_NUMBER, mensagemBoasVindas);
+  res.send('Mensagem enviada com sucesso!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor Evelyn 2.0 rodando na porta ${PORT}`);
+});
